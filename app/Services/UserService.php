@@ -64,7 +64,7 @@ class UserService implements UserServiceInterface
      */
     public function listTrashed()
     {
-        $collection = User::withTrashed()->get();
+        $collection = User::onlyTrashed()->get();
 
         return $this->getPaginatedResults($collection);
     }

@@ -36,8 +36,6 @@ class UserController extends Controller
             return $users;
         }
 
-        // dd($users);
-
         return view('admin.users.index', compact('users'));
     }
 
@@ -108,7 +106,7 @@ class UserController extends Controller
             return $users;
         }
         
-        // return view();
+        return view('admin.users.trash', compact('users'));
     }
 
     /**

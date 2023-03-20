@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Users') }} <a href="{{route('users.create')}}" class="btn btn-primary">Add new User</a></div>
+                <div class="card-header">{{ __('Users') }} <a href="{{route('users.create')}}" class="btn btn-primary">Add new User</a> <a href="{{route('users.trashed')}}" class="btn btn-primary">View Trash</a></div>
 
                 <div class="card-body">
                     <table class="table user-listing">
@@ -34,21 +34,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination">
-                            <?php
-                            $total = $users->total() - 1;
-                            $currentPage = $users->currentPage();
-                            $previous = $currentPage == 1 ? sprintf('/users?page=%s', 1) : sprintf('/users?page=%s', ($currentPage - 1));
-                            $next = $currentPage == $total ? sprintf('/users?page=%s', $total) : sprintf('/users?page=%s', ($currentPage + 1));
-                            ?>
-                            <li class="page-item"><a class="page-link" href="{{$previous}}">Previous</a></li>
-                            @for($a = 0; $a < $total; $a++)
-                            <li class="page-item"><a class="page-link {{$currentPage == ($a+1) ? 'active' : ''}}" href="/users?page={{$a+1}}">{{$a+1}}</a></li>
-                            @endfor
-                            <li class="page-item"><a class="page-link" href="{{$next}}">Next</a></li>
-                        </ul>
-                    </nav>
+                    @include('admin.users.pagination')
                 </div>
             </div>
         </div>

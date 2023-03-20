@@ -15,6 +15,8 @@ import './bootstrap';
 import './components/Example';
 
 
-import {deleteUser} from './actions';
+import {deleteUser, restoreUser, permentlyDelete} from './actions';
 
 deleteUser();
+restoreUser();
+permentlyDelete();
