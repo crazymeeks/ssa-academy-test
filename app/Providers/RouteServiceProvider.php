@@ -26,6 +26,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        parent::boot();
         $this->configureRateLimiting();
 
         $this->routes(function () {
@@ -35,6 +36,16 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+        });
+
+
+        Route::macro('softDeletes', function($prefix, $controller){
+            Route::group(['prefix' => $prefix], function($route) use ($controller) {
+                $route->get('/trashed', [$controller, 'trashed'])->name('users.trashed');
+                $route->patch('/{user}/restore', [$controller, 'restoreUser'])->name('users.restore');
+                $route->delete('/{user}/delete', [$controller, 'softDeleteUser'])->name('users.delete');
+                $route->delete('/{user}/permanent', [$controller, 'permanentlyDeleteUser'])->name('users.delete.permanent');
+            });
         });
     }
 

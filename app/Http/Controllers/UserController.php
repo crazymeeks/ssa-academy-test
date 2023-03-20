@@ -98,7 +98,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function getTrashedUsers()
+    public function trashed()
     {
         $users = $this->userService->listTrashed();
         
@@ -145,7 +145,7 @@ class UserController extends Controller
         try {
 
             $attributes = $this->mergePhoto($request);
-            $user = $this->userService->update($request->id, $attributes);
+            $this->userService->update($request->id, $attributes);
 
             return redirect()->route('users.index');
 
@@ -180,18 +180,15 @@ class UserController extends Controller
     /**
      * Soft delete user
      *
-     * @param \Illuminate\Http\Request $request
+     * @param int $user
      * 
      * @return \Illuminate\Http\JsonResponse
      */
-    public function softDeleteUser(Request $request)
+    public function softDeleteUser(int $user)
     {
-        $request->validate([
-            'id' => 'required',
-        ]);
 
         try {
-            $this->userService->destroy($request->id);
+            $this->userService->destroy($user);
 
             return response()->json([
                 'message' => 'User successfully deleted!'
@@ -207,18 +204,15 @@ class UserController extends Controller
     /**
      * Permanently delete user
      * 
-     * @param \Illuminate\Http\Request $request
+     * @param int $user
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function permanentlyDeleteUser(Request $request)
+    public function permanentlyDeleteUser(int $user)
     {
-        $request->validate([
-            'id' => 'required',
-        ]);
 
         try {
-            $this->userService->delete($request->id);
+            $this->userService->delete($user);
 
             return response()->json([
                 'message' => 'User permanently deleted!'
@@ -234,18 +228,15 @@ class UserController extends Controller
     /**
      * Restore softdeleted user
      * 
-     * @param \Illuminate\Http\Request $request
+     * @param int $user
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function restoreUser(Request $request)
+    public function restoreUser(int $user)
     {
-        $request->validate([
-            'id' => 'required',
-        ]);
 
         try {
-            $this->userService->restore($request->id);
+            $this->userService->restore($user);
 
             return response()->json([
                 'message' => 'User successfully restored!'

@@ -198,7 +198,7 @@ class UserService implements UserServiceInterface
         ];
 
         foreach($attributes as $key => $value){
-            Detail::create([
+            $user->details()->create([
                 'key' => $this->getDetailKey($key),
                 'value' => $value,
                 'type' => Detail::TYPE_BIO,
@@ -207,6 +207,13 @@ class UserService implements UserServiceInterface
         }
     }
 
+    /**
+     * Get detail by key
+     *
+     * @param string $key
+     * 
+     * @return string
+     */
     private function getDetailKey(string $key)
     {
         $keys = [

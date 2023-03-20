@@ -17,27 +17,32 @@
                     <option value="Mrs" {{$user->prefixname == 'Mrs' ? 'selected' : null}}>Mrs</option>
                     <option value="Ms" {{$user->prefixname == 'Ms' ? 'selected' : null}}>Ms</option>
                 </select>
+                <span class="text-danger">{{$errors->first('prefixname')}}</span>
             </div>
             <div class="form-group">
                 <label for="firstname">Firstname</label>
-                <input type="text" class="form-control" name="firstname" id="firstname" placeholder="Enter Firstname" value="{{$user->firstname}}">
+                <input type="text" class="form-control" name="firstname" id="firstname" placeholder="Enter Firstname" value="{{old('firstname', $user->firstname)}}">
+                <span class="text-danger">{{$errors->first('firstname')}}</span>
             </div>
             <div class="form-group">
                 <label for="lastname">Lastname</label>
-                <input type="text" class="form-control" name="lastname" id="lastname" placeholder="Enter Lastname" value="{{$user->lastname}}">
+                <input type="text" class="form-control" name="lastname" id="lastname" placeholder="Enter Lastname" value="{{old('lastname', $user->lastname)}}">
+                <span class="text-danger">{{$errors->first('lastname')}}</span>
             </div>
             <div class="form-group">
                 <label for="suffixname">Suffix Name</label>
-                <input type="text" class="form-control" id="suffixname" name="suffixname" placeholder="Enter Suffix" value="{{$user->suffixname}}">
+                <input type="text" class="form-control" id="suffixname" name="suffixname" placeholder="Enter Suffix" value="{{old('suffixname', $user->suffixname)}}">
             </div>
             <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" placeholder="Enter email" value="{{$user->email}}">
+                <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" placeholder="Enter email" value="{{old('email', $user->email)}}">
                 <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                <span class="text-danger">{{$errors->first('email')}}</span>
             </div>
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" value="{{$user->username}}">
+                <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" value="{{old('username', $user->username)}}">
+                <span class="text-danger">{{$errors->first('username')}}</span>
             </div>
             <div class="form-group">
                 <label for="photo">Photo</label>
@@ -46,7 +51,8 @@
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                <input type="password" class="form-control" name="password" id="password" placeholder="Password" value="{{old('password', $user->password)}}">
+                <span class="text-danger">{{$errors->first('password')}}</span>
             </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <a class="btn btn-primary" href="{{route('users.index')}}">Back</a>

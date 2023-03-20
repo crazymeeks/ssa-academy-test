@@ -7,11 +7,18 @@ namespace Tests\Feature\App\Http\Controllers;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Detail;
+use App\Events\UserSaved;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Http\UploadedFile as LaravelUploadedFile;
 
 class UserControllerTest extends TestCase
 {
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        Event::fake();
+    }
 
     /**
      * @test
@@ -28,14 +35,7 @@ class UserControllerTest extends TestCase
             'username' => 'username'
         ]);
 
-        $this->assertDatabaseHas('details', [
-            'key' => Detail::FN,
-            'value' => $user->fullname,
-            'type' => Detail::TYPE_BIO,
-            'user_id' => $user->id
-        ]);
-
-        // Jeff
+        Event::assertDispatched(UserSaved::class);
     }
 
     /**
@@ -68,7 +68,7 @@ class UserControllerTest extends TestCase
         $data['id'] = $user2->id;
 
         $response = $this->actingAs($user)
-                         ->delete('/users', $data);
+                         ->delete('/users/' . $user2->id . '/delete');
         $this->assertEquals('User successfully deleted!', $response->original['message']);
         
         $user = User::find($user2->id);
@@ -86,10 +86,8 @@ class UserControllerTest extends TestCase
             'deleted_at' => now(),
         ]);
 
-        $data['id'] = $user2->id;
-
         $response = $this->actingAs($user)
-                         ->delete('/users/permanent', $data);
+                         ->delete('/users/' . $user2->id . '/permanent');
         $this->assertEquals('User permanently deleted!', $response->original['message']);
         
         $user = User::find($user2->id);
@@ -106,10 +104,10 @@ class UserControllerTest extends TestCase
             'deleted_at' => now(),
         ]);
 
-        $data['id'] = $user2->id;
 
         $response = $this->actingAs($user)
-                         ->post('/users/restore', $data);
+                         ->patch('/users/' . $user2->id . '/restore');
+
         $this->assertEquals('User successfully restored!', $response->original['message']);
 
         $restored = User::find($user2->id);

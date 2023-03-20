@@ -7,11 +7,7 @@ export const deleteUser = () => {
         $('.action-delete').on('click', async function(evt){
             const id = $(this).data('id');
             try {
-                const response = await api.delete(`/users`, {
-                    data: {
-                        id: id
-                    }
-                });
+                await api.delete(`/users/${id}/delete`);
                 window.location.href = window.location.href;
             } catch (e) {}
         });
@@ -24,9 +20,7 @@ export const restoreUser = () => {
         $('.action-restore').on('click', async function(evt){
             const id = $(this).data('id');
             try {
-                const response = await api.post(`/users/restore`, {
-                    id: id,
-                });
+                await api.patch(`/users/${id}/restore`);
                 window.location.href = window.location.href;
             } catch (e) {}
         });
@@ -40,12 +34,7 @@ export const permentlyDelete = () => {
         $('.action-permanently-delete').on('click', async function(evt){
             const id = $(this).data('id');
             try {
-                const response = await api.delete(`/users/permanent`, {
-                    data: {
-                        id: id,
-
-                    }
-                });
+                await api.delete(`/users/${id}/permanent`);
                 window.location.href = window.location.href;
             } catch (e) {}
         });
