@@ -165,8 +165,10 @@ class UserControllerTest extends TestCase
             ]);
         }
 
-        $user = User::factory()->create();
-
+        $user = User::factory()->create([
+            'photo' => 'avatar.png'
+        ]);
+        
         $response = $this->actingAs($user)
                          ->get('/users/trashed');
 
