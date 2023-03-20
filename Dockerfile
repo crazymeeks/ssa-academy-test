@@ -41,5 +41,6 @@ WORKDIR /var/www/web
 EXPOSE 80
 EXPOSE 3000
 EXPOSE 443
+EXPOSE 5173
 
 CMD service php8.0-fpm start && nginx -g "daemon off;"
