@@ -164,8 +164,8 @@ class UserService implements UserServiceInterface
      */
     public function upload(UploadedFile $file)
     {
-        $path = Storage::put('/images', $file);
-        
+        $path = Storage::put('/public/images', $file);
+        $path = str_replace('public', 'storage', $path);
         return $path;
     }
 
@@ -191,8 +191,14 @@ class UserService implements UserServiceInterface
      */
     protected function hashPassword(array $attributes)
     {
+        if (isset($attributes['id'])) {
+            if (isset($attributes['password']) || is_null($attributes['password'])) {
+                unset($attributes['password']);
+                return $attributes;
+            }
+        }
 
-        if (isset($attributes['password']) && $attributes['password']) {
+        if (isset($attributes['password']) && !is_null($attributes['password'])) {
             $attributes['password'] = $this->hash($attributes['password']);
         }
 

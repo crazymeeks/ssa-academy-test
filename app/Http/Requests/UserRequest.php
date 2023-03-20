@@ -27,12 +27,16 @@ class UserRequest extends FormRequest
         //     UserServiceInterface::class
         // )->rules($this->user);
 
-        return [
+        $rules = [
             'firstname' => 'required',
             'lastname' => 'required',
             'email' => 'required|email|unique:users,email,' . $this->id,
             'password' => 'required',
-            'username' => 'required',
+            'username' => 'required|unique:users,username,' . $this->id,
         ];
+        if ($this->id) {
+            unset($rules['password']);
+        }
+        return $rules;
     }
 }

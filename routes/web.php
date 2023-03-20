@@ -21,10 +21,14 @@ use App\Http\Controllers\UserController;
 Auth::routes();
 
 
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 Route::group(['prefix' => 'users', 'middleware' => ['auth']], function($route){
     $route->get('/', [UserController::class, 'index'])->name('users.index');
     $route->get('/trashed', [UserController::class, 'getTrashedUsers'])->name('users.trashed');
-    $route->get('/{id}', [UserController::class, 'viewUserDetails'])->name('users.details');
+    $route->get('/create', [UserController::class, 'createUser'])->name('users.create');
+    $route->get('/{id}', [UserController::class, 'editUser'])->name('users.edit');
+    $route->get('/{id}/show', [UserController::class, 'showUserDetails'])->name('users.show');
     
     $route->post('/', [UserController::class, 'postCreate'])->name('users.post.create');
     $route->put('/', [UserController::class, 'updateUser'])->name('users.update');
@@ -32,8 +36,4 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth']], function($route){
     $route->delete('/permanent', [UserController::class, 'permanentlyDeleteUser'])->name('users.delete');
     $route->post('/restore', [UserController::class, 'restoreUser'])->name('users.restore');
     $route->post('/upload', [UserController::class, 'uploadPhoto'])->name('users.upload');
-    
-    
 });
-
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

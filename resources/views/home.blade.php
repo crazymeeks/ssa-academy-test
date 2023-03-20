@@ -14,7 +14,7 @@
                         </div>
                     @endif
 
-                    <a href="#">User List</a>
+                    <a href="{{route('users.index')}}">User List</a>
                 </div>
             </div>
         </div>

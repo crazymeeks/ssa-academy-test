@@ -13,3 +13,8 @@ import './bootstrap';
  */
 
 import './components/Example';
+
+
+import {deleteUser} from './actions';
+
+deleteUser();

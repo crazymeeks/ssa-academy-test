@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Services\UserServiceInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
 {
@@ -34,7 +36,21 @@ class UserController extends Controller
             return $users;
         }
 
-        // return view();
+        // dd($users);
+
+        return view('admin.users.index', compact('users'));
+    }
+
+    /**
+     * Show create user form page
+     *
+     * @param \App\Models\User $user
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function createUser(User $user)
+    {
+        return view('admin.users.form', compact('user'));
     }
 
     /**
@@ -44,12 +60,37 @@ class UserController extends Controller
      * 
      * @return \Illuminate\View\View
      */
-    public function viewUserDetails(int $id)
+    public function editUser(int $id)
     {
-        $user = $this->userService->find($id);
+        try {
+            $user = $this->userService->find($id);
+
+        } catch (ModelNotFoundException $e) {
+            $user = new User();
+        }
 
         if (config('app.env') === 'testing') {
             return $user;
+        }
+
+        return view('admin.users.form', compact('user'));
+
+    }
+
+    /**
+     * Show user details
+     *
+     * @param integer $id
+     * 
+     * @return \Illuminate\View\VIew
+     */
+    public function showUserDetails(int $id)
+    {
+        try {
+            $user = $this->userService->find($id);
+            return view('admin.users.details', compact('user'));
+        } catch (ModelNotFoundException $e) {
+            abort(404);
         }
 
     }
@@ -66,7 +107,7 @@ class UserController extends Controller
         if (config('app.env') === 'testing') {
             return $users;
         }
-
+        
         // return view();
     }
 
@@ -81,10 +122,12 @@ class UserController extends Controller
     {
         
         try {
-            $this->userService->store($request->toArray());
-            return response()->json([
-                'message' => 'User successfully created!'
-            ]);
+            $user = $this->userService->store($request->toArray());
+
+            $this->shouldUpdatePhoto($user, $request);
+            
+            return redirect()->route('users.index');
+
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Oops! Something went wrong!',
@@ -103,16 +146,34 @@ class UserController extends Controller
     public function updateUser(UserRequest $request)
     {
         try {
-            $this->userService->update($request->id, $request->toArray());
+            $user = $this->userService->update($request->id, $request->toArray());
 
-            return response()->json([
-                'message' => 'User successfully updated!'
-            ]);
+            $this->shouldUpdatePhoto($user, $request);
+
+            return redirect()->route('users.index');
+
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Oops! Something went wrong!',
                 'exception' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * Update photo
+     *
+     * @param \App\Models\User $user
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    private function shouldUpdatePhoto(User $user, $request)
+    {
+        if ($request->has('photo')) {
+            $path = $this->userService->upload($request->photo);
+            $user->photo = $path;
+            $user->save();
         }
     }
 
@@ -208,13 +269,12 @@ class UserController extends Controller
     public function uploadPhoto(Request $request)
     {
         $request->validate([
-            'file' => 'required|image',
+            'photo' => 'required|image',
         ]);
-
 
         try {
 
-            $path = $this->userService->upload($request->file);
+            $path = $this->userService->upload($request->photo);
             $user = Auth::user();
             $user->photo = $path;
             $user->save();

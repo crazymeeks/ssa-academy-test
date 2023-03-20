@@ -20,10 +20,9 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)
+        $this->actingAs($user)
                          ->post('/users', $data);
         
-        $this->assertEquals('User successfully created!', $response->original['message']);
         $this->assertDatabaseHas('users', [
             'username' => 'username'
         ]);
@@ -39,9 +38,11 @@ class UserControllerTest extends TestCase
 
         $data['id'] = $user->id;
 
-        $response = $this->actingAs($user)
+        $this->actingAs($user)
                          ->put('/users', $data);
-        $this->assertEquals('User successfully updated!', $response->original['message']);
+        $this->assertDatabaseHas('users', [
+            'firstname' => $data['firstname'],
+        ]);
 
     }
 
@@ -111,7 +112,7 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create();
 
         $data = [
-            'file' => LaravelUploadedFile::fake()->image('avatar.jpg'),
+            'photo' => LaravelUploadedFile::fake()->image('avatar.jpg'),
         ];
 
         $response = $this->actingAs($user)
