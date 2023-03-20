@@ -20,6 +20,64 @@ class UserServiceTest extends TestCase
         $this->userService = app(UserService::class);
     }
 
+    private function seedUsers()
+    {
+        for($a = 0; $a < 10; $a++){
+            User::factory()->create([
+                'email' => "test$a@example.com",
+                'username' => "Username$a"
+            ]);
+        }
+    }
+
+    private function seedDeleteUsers()
+    {
+        for($a = 0; $a < 10; $a++){
+            User::factory()->create([
+                'email' => "test$a@example.com",
+                'username' => "Username$a",
+                'deleted_at' => now(),
+            ]);
+        }
+    }
+
+    /** @test */
+    public function it_can_return_a_paginated_list_of_users()
+    {
+        $this->seedUsers();
+
+        $result = $this->userService->list();
+
+        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $result);
+    }
+
+    /** @test */
+    public function it_can_find_and_return_an_existing_user()
+    {
+        $user = User::factory()->create();
+        $result = $this->userService->find($user->id);
+
+        $this->assertInstanceOf(User::class, $result);
+    }
+
+    /** @test */
+    public function it_should_throw_when_user_could_not_be_found()
+    {
+        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+
+        $this->userService->find(1);
+    }
+
+    /** @test */
+    public function it_can_return_a_paginated_list_of_trashed_users()
+    {
+        $this->seedDeleteUsers();
+
+        $result = $this->userService->listTrashed();
+        
+        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $result);
+    }
+
     /**
      * @test
      * @dataProvider data

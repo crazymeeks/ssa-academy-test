@@ -5,12 +5,14 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Collection;
 use App\Services\UserServiceInterface;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class UserService implements UserServiceInterface
 {
-
 
     /** @inheritDoc */
     public function hash(string $key)
@@ -18,6 +20,66 @@ class UserService implements UserServiceInterface
         return bcrypt($key);
     }
 
+
+    /**
+     * Return the paginated list of users
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function list()
+    {
+        $collection = collect(User::all());
+        
+        return $this->getPaginatedResults($collection);
+
+    }
+
+    /**
+     * Get paginated results
+     * 
+     * @param \Illuminate\Support\Collection $collection
+     * 
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    private function getPaginatedResults(Collection $collection)
+    {
+        $request = request();
+
+        $page = $request->has('page') ? (int) $request->page : 1;
+        $perPage = 2;
+        $paginate = new LengthAwarePaginator(
+            $collection->forPage($page, $perPage),
+            $collection->count(),
+            $perPage,
+            $page,
+        );
+
+        return $paginate;
+    }
+
+    /**
+     * Get paginated list of users in trashed
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function listTrashed()
+    {
+        $collection = User::withTrashed()->get();
+
+        return $this->getPaginatedResults($collection);
+    }
+
+    /**
+     * Find user
+     *
+     * @param integer $id
+     * 
+     * @return \App\Models\User
+     */
+    public function find(int $id)
+    {
+        return User::findOrFail($id);
+    }
 
     /**
      * Store data in the database
