@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Detail;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
@@ -180,6 +181,42 @@ class UserService implements UserServiceInterface
     public function findInTrash(int $id)
     {
         return User::withTrashed()->whereId($id);
+    }
+
+    /**
+     * Save user details
+     *
+     * @return void
+     */
+    public function saveDetails(User $user)
+    {
+        $attributes = [
+            'fullname' => $user->fullname,
+            'middleinitial' => $user->middleinitial,
+            'avatar' => $user->avatar,
+            'gender' => $user->getGenderAccordingToPrefix($user->prefixname)
+        ];
+
+        foreach($attributes as $key => $value){
+            Detail::create([
+                'key' => $this->getDetailKey($key),
+                'value' => $value,
+                'type' => Detail::TYPE_BIO,
+                'user_id' => $user->id,
+            ]);
+        }
+    }
+
+    private function getDetailKey(string $key)
+    {
+        $keys = [
+            'fullname' => Detail::FN,
+            'middleinitial' => Detail::MI,
+            'avatar' => Detail::AV,
+            'gender' => Detail::GR,
+        ];
+
+        return $keys[$key];
     }
 
     /**

@@ -120,10 +120,9 @@ class UserController extends Controller
     {
         
         try {
-            $user = $this->userService->store($request->toArray());
 
-            $this->shouldUpdatePhoto($user, $request);
-            
+            $attributes = $this->mergePhoto($request);
+            $user = $this->userService->store($attributes);            
             return redirect()->route('users.index');
 
         } catch (Exception $e) {
@@ -144,9 +143,9 @@ class UserController extends Controller
     public function updateUser(UserRequest $request)
     {
         try {
-            $user = $this->userService->update($request->id, $request->toArray());
 
-            $this->shouldUpdatePhoto($user, $request);
+            $attributes = $this->mergePhoto($request);
+            $user = $this->userService->update($request->id, $attributes);
 
             return redirect()->route('users.index');
 
@@ -164,15 +163,18 @@ class UserController extends Controller
      * @param \App\Models\User $user
      * @param \Illuminate\Http\Request $request
      * 
-     * @return void
+     * @return array
      */
-    private function shouldUpdatePhoto(User $user, $request)
+    private function mergePhoto($request)
     {
-        if ($request->has('photo')) {
-            $path = $this->userService->upload($request->photo);
-            $user->photo = $path;
-            $user->save();
+        if ($request->has('file')) {
+            $path = $this->userService->upload($request->file);
+            $request->merge([
+                'photo' => $path,
+            ]);
         }
+
+        return $request->toArray();
     }
 
     /**
@@ -267,12 +269,12 @@ class UserController extends Controller
     public function uploadPhoto(Request $request)
     {
         $request->validate([
-            'photo' => 'required|image',
+            'file' => 'required|image',
         ]);
 
         try {
 
-            $path = $this->userService->upload($request->photo);
+            $path = $this->userService->upload($request->file);
             $user = Auth::user();
             $user->photo = $path;
             $user->save();

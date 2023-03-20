@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Detail;
+use App\Events\UserSaved;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +15,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    const TYPE_USER = 'user';
 
     /**
      * The attributes that are mass assignable.
@@ -32,6 +36,15 @@ class User extends Authenticatable
         'type',
         'email_verified_at',
         'deleted_at'
+    ];
+
+    /**
+     * The event map for the model
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'saved' => UserSaved::class,
     ];
 
     /**
@@ -88,5 +101,48 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn() => $this->middlename ? strtoupper(substr($this->middlename, 0, 1)) : null
         );
+    }
+
+    /**
+     * Get details of this model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function details()
+    {
+        return $this->hasMany(Detail::class);
+    }
+
+    /**
+     * Get gender of a user according to prefix
+     *
+     * @param string $prefix Mr, Mrs, Ms.
+     * 
+     * @return string
+     */
+    public function getGenderAccordingToPrefix(string $prefix)
+    {
+        return $this->genderFromMap($prefix);
+    }
+
+    /**
+     * Get mapped gender
+     *
+     * @param string $prefix
+     * 
+     * @return string
+     */
+    private function genderFromMap(string $prefix)
+    {
+
+        $prefix = strtolower($prefix);
+
+        $prefixes = [
+            'mr' => 'Male',
+            'mrs' => 'Female',
+            'ms' => 'Female'
+        ];
+
+        return $prefixes[$prefix];
     }
 }

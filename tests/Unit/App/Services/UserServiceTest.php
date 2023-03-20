@@ -5,6 +5,7 @@ namespace Tests\Unit\App\Services;
 
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Detail;
 use App\Services\UserService;
 use Illuminate\Http\UploadedFile as LaravelUploadedFile;
 
@@ -162,6 +163,21 @@ class UserServiceTest extends TestCase
         $result = $this->userService->upload($file);
 
         $this->assertTrue(str_contains($result, 'images'));
+    }
+
+    /** @test */
+    public function it_can_save_details()
+    {
+        $user = User::factory()->create();
+        
+        $this->userService->saveDetails($user);
+
+        $this->assertDatabaseHas('details', [
+            'key' => Detail::FN,
+            'value' => $user->fullname,
+            'type' => Detail::TYPE_BIO,
+            'user_id' => $user->id
+        ]);
     }
 
     public function data()

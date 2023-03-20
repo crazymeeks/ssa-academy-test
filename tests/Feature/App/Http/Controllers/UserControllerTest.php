@@ -6,6 +6,7 @@ namespace Tests\Feature\App\Http\Controllers;
 
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Detail;
 use Illuminate\Http\UploadedFile as LaravelUploadedFile;
 
 class UserControllerTest extends TestCase
@@ -26,6 +27,15 @@ class UserControllerTest extends TestCase
         $this->assertDatabaseHas('users', [
             'username' => 'username'
         ]);
+
+        $this->assertDatabaseHas('details', [
+            'key' => Detail::FN,
+            'value' => $user->fullname,
+            'type' => Detail::TYPE_BIO,
+            'user_id' => $user->id
+        ]);
+
+        // Jeff
     }
 
     /**
@@ -112,12 +122,12 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create();
 
         $data = [
-            'photo' => LaravelUploadedFile::fake()->image('avatar.jpg'),
+            'file' => LaravelUploadedFile::fake()->image('avatar.jpg'),
         ];
 
         $response = $this->actingAs($user)
                          ->post('/users/upload', $data);
-
+        
         $this->assertEquals('User photo successfully uploaded!', $response->original['message']);
 
         $user = User::first();
