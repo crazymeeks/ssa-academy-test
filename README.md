@@ -20,18 +20,22 @@ docker composer up -d
 4. Install dependencies
 ```bash
 docker exec -it ssa-academy.local-172.28.0.63 composer install
+``` 
+5. Literally copy everything from `.env.example` to `.env`.
+6. Migrate and seed  
+```bash
 docker exec -it ssa-academy.local-172.28.0.63 php artisan migrate
 docker exec -it ssa-academy.local-172.28.0.63 php artisan db:seed
 ```  
-5. SSH to docker container to install npm dependencies  
+7. SSH to docker container to install npm dependencies  
 ```bash
 docker exec -it ssa-academy.local-172.28.0.63 bash
 ```  
-6. Install npm dependencies
+8. Install npm dependencies
 ```bash
 npm install
 ```  
-7. Finally, run command below and you're good to go:  
+9. Finally, run command below and you're good to go:  
 ```bash
 npm run dev
 ```  
