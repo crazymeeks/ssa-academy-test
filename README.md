@@ -40,6 +40,17 @@ npm install
 npm run dev
 ```  
 
+# Running tests
+Run the command below in your terminal in order to run the tests.  
+Make sure you have sqlite3 installed on your machine since.
+```bash
+./vendor/bin/phpunit
+
+or
+
+php artisan test
+```
+
 ## Default Login username and password.
 You may use the ready made account to login.  
 ```bash
